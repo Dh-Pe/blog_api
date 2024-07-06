@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  password     String
+  isSubscribed Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  reactions Reaction[]
+
+  @@index(fields: [email, password])
+  @@map("users")
+}
+
+model Collaborator {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  posts Post[]
+
+  @@index(fields: [email, password])
+  @@map("collaborators")
+}
+
+model Post {
+  id             BigInt   @id @default(autoincrement())
+  title          String
+  slug           String   @unique
+  content        String   @db.Text
+  createdAt      DateTime @default(now())
+  collaboratorId String
+
+  collaborator Collaborator @relation(fields: [collaboratorId], references: [id])
+  reactions    Reaction[]
+
+  @@map("posts")
+}
+
+enum ReactionTypes {
+  LIKE
+  UNLIKE
+}
+
+model Reaction {
+  id            BigInt        @id @default(autoincrement())
+  createdAt     DateTime      @default(now())
+  reaction_type ReactionTypes
+  userId        String
+  postId        BigInt
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@map("reactions")
+}
