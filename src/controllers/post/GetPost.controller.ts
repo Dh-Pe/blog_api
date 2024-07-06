@@ -7,13 +7,13 @@ const paramsSchema = z.object({
   id: z.bigint().nonnegative("Post inexistente"),
 });
 
-type ParamsType = z.infer<typeof paramsSchema>;
+const idSchema = z.number().nonnegative("Post inexistente");
 
 export class GetPostController {
   async handle(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const id: number = Number(
-        (paramsSchema.parse(req.params) as ParamsType).id
+      const id: number = idSchema.parse(
+        Number((req.params as { id: string }).id)
       );
 
       const postFetched = await prisma.post.findFirst({

@@ -14,9 +14,14 @@ export class CreatePostController {
   async handle(req: FastifyRequest, reply: FastifyReply) {
     try {
       const postData: Post = postSchema.parse(req.body);
+      const collaboratorId = req.collaborator?.id;
+
+      if (!collaboratorId) {
+        throw new Error("Usuário inexistente");
+      }
 
       const postCreated = await prisma.post.create({
-        data: { ...postData, collaboratorId: "" }, //TODO: TROCAR COLLABORATOR_ID POR USUÁRIO DO TOKEN
+        data: { ...postData, collaboratorId },
         select: {
           id: true,
           title: true,
@@ -34,8 +39,7 @@ export class CreatePostController {
       if (err instanceof z.ZodError) {
         return reply.status(400).send({ error: err.errors[0].message });
       } else if (err instanceof Error) {
-        console.log(err);
-        return reply.status(400).send({ error: "E-Mail já existente" });
+        return reply.status(400).send({ error: err.message });
       } else {
         return reply.status(500).send({ error: "Erro interno do servidor" });
       }

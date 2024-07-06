@@ -16,7 +16,7 @@ export class GetUsersController {
         },
       });
 
-      return reply.status(201).send(userCreated);
+      return reply.status(200).send(userCreated);
     } catch (err: any) {
       if (err instanceof z.ZodError) {
         return reply.status(400).send({ error: err.errors[0].message });

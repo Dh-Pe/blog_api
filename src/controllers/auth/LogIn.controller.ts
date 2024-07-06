@@ -21,7 +21,7 @@ export class LogInController {
     try {
       const { email, password }: Login = loginSchema.parse(req.body);
 
-      const userFetched = await prisma.user.findFirst({
+      const userFetched = await prisma.collaborator.findFirst({
         where: {
           email,
           password,
@@ -30,20 +30,19 @@ export class LogInController {
           id: true,
           name: true,
           email: true,
-          isSubscribed: true,
           createdAt: true,
         },
       });
 
       if (!userFetched) {
-        throw new Error("Usuário não cadastrado.");
+        throw new Error("Colaborador não cadastrado.");
       }
 
       if (SECRET === undefined) {
         throw "Variável de ambiente não carregada";
       }
 
-      const token = jwt.sign(userFetched, SECRET);
+      const token = jwt.sign(userFetched, SECRET, { expiresIn: "30m" });
 
       return reply.status(200).send({ token });
     } catch (err: any) {

@@ -23,19 +23,18 @@ const authSchema = z
     return val.replace("Bearer ", "");
   });
 
-const userSchema = z.object({
+const collaboratorSchema = z.object({
   id: z.string().uuid("Usuário inválido"),
   name: z.string(),
   email: z.string().email("E-Mail inválido"),
-  isSubscribed: z.boolean(),
   createdAt: z.date({ coerce: true }),
 });
 
-type User = z.infer<typeof userSchema>;
+type Collaborator = z.infer<typeof collaboratorSchema>;
 
 declare module "fastify" {
   interface FastifyRequest {
-    user?: User;
+    collaborator?: Collaborator;
   }
 }
 
@@ -48,9 +47,9 @@ export class AuthGuardMiddleware {
         throw "Variável de ambiente não carregada";
       }
 
-      const user: User = userSchema.parse(jwt.verify(token, SECRET));
+      const collaborator: Collaborator = collaboratorSchema.parse(jwt.verify(token, SECRET));
 
-      req.user = user;
+      req.collaborator = collaborator;
 
       return done();
     } catch (err: any) {

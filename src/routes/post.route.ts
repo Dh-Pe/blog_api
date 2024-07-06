@@ -4,6 +4,7 @@ import { DeletePostController } from "../controllers/post/DeletePost.controller"
 import { GetPostController } from "../controllers/post/GetPost.controller";
 import { GetPostsController } from "../controllers/post/GetPosts.controller";
 import { UpdatePostController } from "../controllers/post/UpdatePost.controller";
+import { AuthGuardMiddleware } from "../middlewares/AuthGuard.middleware";
 
 export class PostRouter {
   route(
@@ -12,10 +13,28 @@ export class PostRouter {
     done: (err?: Error | undefined) => void
   ) {
     fastify.get("/", new GetPostsController().handle);
-    fastify.post("/", new CreatePostController().handle);
+    fastify.post(
+      "/",
+      {
+        preHandler: new AuthGuardMiddleware().handle,
+      },
+      new CreatePostController().handle
+    );
     fastify.get("/:id", new GetPostController().handle);
-    fastify.put("/:id", new UpdatePostController().handle);
-    fastify.delete("/:id", new DeletePostController().handle);
+    fastify.put(
+      "/:id",
+      {
+        preHandler: new AuthGuardMiddleware().handle,
+      },
+      new UpdatePostController().handle
+    );
+    fastify.delete(
+      "/:id",
+      {
+        preHandler: new AuthGuardMiddleware().handle,
+      },
+      new DeletePostController().handle
+    );
     done();
   }
 }

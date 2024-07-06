@@ -16,7 +16,7 @@ export class GetCollaboratorsController {
         },
       });
 
-      return reply.status(201).send(collaboratorCreated);
+      return reply.status(200).send(collaboratorCreated);
     } catch (err: any) {
       if (err instanceof z.ZodError) {
         return reply.status(400).send({ error: err.errors[0].message });

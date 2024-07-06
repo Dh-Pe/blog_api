@@ -4,23 +4,20 @@ import { z } from "zod";
 import { prisma } from "../../config/database";
 
 const postSchema = z.object({
-  title: z.string(),
-  content: z.string(),
-  slug: z.string(),
+  title: z.string().optional(),
+  content: z.string().optional(),
+  slug: z.string().optional(),
 });
 
-const paramsSchema = z.object({
-  id: z.bigint().nonnegative("Post inexistente"),
-});
+const idSchema = z.number().nonnegative("Post inexistente");
 
 type Post = z.infer<typeof postSchema>;
-type ParamsType = z.infer<typeof paramsSchema>;
 
 export class UpdatePostController {
   async handle(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const id: number = Number(
-        (paramsSchema.parse(req.params) as ParamsType).id
+      const id: number = idSchema.parse(
+        Number((req.params as { id: string }).id)
       );
       const postData: Post = postSchema.parse(req.body);
 

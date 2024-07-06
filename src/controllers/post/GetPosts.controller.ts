@@ -6,17 +6,18 @@ import { prisma } from "../../config/database";
 export class GetPostsController {
   async handle(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const postsFetched = await prisma.collaborator.findMany({
+      const postsFetched = await prisma.post.findMany({
         select: {
           id: true,
-          name: true,
-          email: true,
+          title: true,
+          content: true,
+          slug: true,
           createdAt: true,
-          posts: true,
+          collaborator: true,
         },
       });
 
-      return reply.status(201).send(
+      return reply.status(200).send(
         postsFetched.map((p) => {
           return { ...p, id: Number(p.id) };
         })

@@ -12,13 +12,7 @@ export class CollaboratorRouter {
     _: FastifyPluginOptions,
     done: (err?: Error | undefined) => void
   ): void {
-    fastify.get(
-      "/",
-      {
-        preHandler: new AuthGuardMiddleware().handle,
-      },
-      new GetCollaboratorsController().handle
-    );
+    fastify.get("/", new GetCollaboratorsController().handle);
     fastify.post("/", new CreateCollaboratorController().handle);
     fastify.get("/:id", new GetCollaboratorController().handle);
     fastify.put("/:id", new UpdateCollaboratorController().handle);
